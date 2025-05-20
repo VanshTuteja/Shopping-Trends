@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'package.json'
+      - 'pyproject.toml'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version package.json)  # Use Python logic if needed
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Tag
+        run: |
+          git tag v$VERSION
+          git push origin v$VERSION
